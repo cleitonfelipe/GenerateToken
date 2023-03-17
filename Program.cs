@@ -1,16 +1,17 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 Console.WriteLine($"Token: {GenerateJWTToken()}");
-Console.ReadKey();
+
 
 string GenerateJWTToken()
 {
-    var issuer = "<Issuer>";
-    var audience = "<Audience>";
+    var issuer = "webApi";
+    var audience = "https://localhost:44304/";
     var issuerAt = DateTime.Now;
-    var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("<Secret>"));
+    var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("a1Jf6hDkJ9SDcWy4JAwN2hOIi7LsXsf0"));
 
     var tokenDescriptor = new SecurityTokenDescriptor
     {
@@ -26,3 +27,35 @@ string GenerateJWTToken()
     var stringToken = tokenHandler.WriteToken(token);
     return stringToken;
 }
+var token = Console.ReadLine();
+var result = ValidateCurrentToken(token);
+
+bool ValidateCurrentToken(string token)
+{
+    var Secret = "";
+    var SecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));
+
+    var Issuer = "http://mysite.com";
+    var Audience = "account";
+
+    var tokenHandler = new JwtSecurityTokenHandler();
+    try
+    {
+        tokenHandler.ValidateToken(token, new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidIssuer = Issuer,
+            ValidAudience = Audience,
+            IssuerSigningKey = SecurityKey
+        }, out SecurityToken validatedToken);
+    }
+    catch
+    {
+        return false;
+    }
+    return true;
+}
+Console.WriteLine(result);
+Console.ReadKey();
